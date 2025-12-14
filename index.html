@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>აპლიკაციის ვერსიების დაფა</title>
+    <!-- Tailwind CSS CDN-ის ჩატვირთვა -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- ინტერფეისის ესთეტიკა: შრიფტი და ძირითადი სტილები -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* ღია ნაცრისფერი ფონი */
+            color: #1f2937; /* მუქი ტექსტი */
+        }
+        .card {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            background-color: white; /* ღია ბარათები */
+            border: 1px solid #e5e7eb;
+        }
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+        .primary-button {
+            transition: all 0.2s ease;
+        }
+        .editable-content {
+            border-radius: 4px;
+            padding: 2px;
+            transition: background-color 0.2s;
+        }
+        .editable-content[contenteditable="true"] {
+            outline: 2px dashed #4f46e5;
+            background-color: rgba(79, 70, 229, 0.1); /* ღია ფონი რედაქტირებისას */
+        }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+    <div class="max-w-7xl mx-auto">
+        <!-- სათაური და კონტროლი -->
+        <header class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-2">აპლიკაციის ვერსიების დაფა</h1>
+            <p class="text-xl text-gray-600 mb-6">ყველა ხელმისაწვდომი ვერსია ერთ სივრცეში (შებრუნებული თანმიმდევრობა)</p>
+            
+            <div class="flex justify-center space-x-4">
+                <button id="editButton" class="primary-button bg-gray-500 text-white py-2 px-6 rounded-lg font-semibold hover:bg-gray-600 focus:outline-none focus:ring-4 focus:ring-gray-400 focus:ring-opacity-50">
+                    ტექსტის რედაქტირება
+                </button>
+                <button id="saveButton" class="primary-button bg-indigo-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50 hidden">
+                    ცვლილებების შენახვა
+                </button>
+            </div>
+            <div id="statusMessage" class="mt-4 text-sm font-medium text-green-600 hidden"></div>
+        </header>
+
+        <!-- ბარათების კონტეინერი -->
+        <main class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            
+            <!-- ბარათი 5: Supabase სერვერზე (პირველი) -->
+            <div class="card p-6 rounded-xl flex flex-col justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold text-pink-600 mb-3 flex items-center">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c1.657 0 3 .895 3 2s-1.343 2-3 2-3-.895-3-2 1.343-2 3-2zM4 14c0 1.657 3.582 3 8 3s8-1.343 8-3-3.582-3-8-3-8 1.343-8 3z"></path></svg>
+                        ვერსია 5 (Supabase სრული)
+                    </h2>
+                    <p class="editable-content text-gray-700 mb-6" data-id="v5" contenteditable="false">
+                        თავიდან ბოლომდე მუშაობს Supabase სერვერზე. იყენებს მის მონაცემთა ბაზასა და ავთენტიფიკაციის სისტემას.
+                    </p>
+                </div>
+                <a href="https://geni-pr.vercel.app/" target="_blank" class="primary-button inline-block text-center bg-pink-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-pink-700 focus:outline-none focus:ring-4 focus:ring-pink-500 focus:ring-opacity-50 mt-auto">
+                    გადასვლა
+                </a>
+            </div>
+
+            <!-- ბარათი 4: სრული ფუნქციონალი (Supabase ბექაპი) -->
+            <div class="card p-6 rounded-xl flex flex-col justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold text-blue-600 mb-3 flex items-center">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 17h18M6 17v-4m-1.5 0H19M4 21h16a2 2 0 002-2V8a2 2 0 00-2-2H4a2 2 0 00-2 2v11a2 2 0 002 2zm1-5h8m-8 4h8m-8-8h2m-2-4h14a2 2 0 002-2V5a2 2 0 00-2-2H4a2 2 0 00-2 2v2a2 2 0 002 2z"></path></svg>
+                        ვერსია 4 (ფლაგმანი)
+                    </h2>
+                    <p class="editable-content text-gray-700 mb-6" data-id="v4" contenteditable="false">
+                        ძალიან მაგარი ვერსია ღია წვდომით. სრული ფუნქციონალი: Supabase ბექაპი, სურათების ატვირთვა, გაზიარება და შეტყობინებები.
+                    </p>
+                </div>
+                <a href="https://geni-am.vercel.app/" target="_blank" class="primary-button inline-block text-center bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 mt-auto">
+                    გადასვლა
+                </a>
+            </div>
+
+            <!-- ბარათი 3: მარტივი დაწყება (ავტორიზაციის გარეშე) - განახლებული აღწერილობით -->
+            <div class="card p-6 rounded-xl flex flex-col justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold text-green-600 mb-3 flex items-center">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        ვერსია 3 (სტარტი)
+                    </h2>
+                    <p class="editable-content text-gray-700 mb-6" data-id="v3" contenteditable="false">
+                        არ სჭირდება ავტორიზაცია. მუშაობს იდეალურად. სურათების გასაზიარებლად საჭიროა API Key-ის მითითება. გაზიარებისას იყენებს დროებით სერვისებს.
+                    </p>
+                </div>
+                <a href="https://geni-pb.vercel.app/" target="_blank" class="primary-button inline-block text-center bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-opacity-50 mt-auto">
+                    გადასვლა
+                </a>
+            </div>
+
+            <!-- ბარათი 2: ავტორიზაციით (ლოკალური) -->
+            <div class="card p-6 rounded-xl flex flex-col justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold text-yellow-600 mb-3 flex items-center">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                        ვერსია 2 (ავტორიზაცია)
+                    </h2>
+                    <p class="editable-content text-gray-700 mb-6" data-id="v2" contenteditable="false">
+                        საჭიროა ავტორიზაცია. თუ ავტორიზაცია არ გაქვთ, მუშაობს ლოკალურად თქვენს ბრაუზერში.
+                    </p>
+                </div>
+                <a href="https://avma-geni.netlify.app/" target="_blank" class="primary-button inline-block text-center bg-yellow-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-yellow-700 focus:outline-none focus:ring-4 focus:ring-yellow-500 focus:ring-opacity-50 mt-auto">
+                    გადასვლა
+                </a>
+            </div>
+            
+            <!-- ბარათი 1: ორიგინალი - AI მხარდაჭერით (ბოლო) -->
+            <div class="card p-6 rounded-xl flex flex-col justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold text-indigo-600 mb-3 flex items-center">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-1.75-3M3 14h18M5 17h14M10 7l-2 5m8-5l-2 5"></path></svg>
+                        ვერსია 1 (ორიგინალი AI)
+                    </h2 >
+                    <p class="editable-content text-gray-700 mb-6" data-id="v1" contenteditable="false">
+                        მუშაობს ხელოვნური ინტელექტის (AI) მხარდაჭერით. ეს არის აპლიკაციის საწყისი, ორიგინალი ვერსია.
+                    </p>
+                </div>
+                <a href="https://geni-original-454925356014.us-west1.run.app/" target="_blank" class="primary-button inline-block text-center bg-indigo-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50 mt-auto">
+                    გადასვლა
+                </a>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        const editButton = document.getElementById('editButton');
+        const saveButton = document.getElementById('saveButton');
+        const statusMessage = document.getElementById('statusMessage');
+        const editableElements = document.querySelectorAll('.editable-content');
+        let isEditing = false;
+
+        // Load content from localStorage on page load
+        function loadContent() {
+            editableElements.forEach(el => {
+                const id = el.dataset.id;
+                const savedText = localStorage.getItem(`editable_content_${id}`);
+                if (savedText) {
+                    el.textContent = savedText;
+                }
+            });
+        }
+
+        // Toggle editing mode
+        editButton.addEventListener('click', () => {
+            isEditing = !isEditing;
+            
+            editableElements.forEach(el => {
+                el.contentEditable = isEditing;
+            });
+
+            if (isEditing) {
+                editButton.textContent = 'რედაქტირების დასრულება';
+                editButton.classList.remove('bg-gray-500', 'hover:bg-gray-600');
+                editButton.classList.add('bg-red-600', 'hover:bg-red-700');
+                saveButton.classList.remove('hidden');
+                statusMessage.classList.add('hidden');
+            } else {
+                editButton.textContent = 'ტექსტის რედაქტირება';
+                editButton.classList.remove('bg-red-600', 'hover:bg-red-700');
+                editButton.classList.add('bg-gray-500', 'hover:bg-gray-600');
+                // Don't hide save button yet, let the user decide to save or discard
+            }
+        });
+
+        // Save changes to localStorage (persists in the browser)
+        saveButton.addEventListener('click', () => {
+            let changesMade = false;
+            editableElements.forEach(el => {
+                const id = el.dataset.id;
+                const newText = el.textContent.trim();
+                const currentSavedText = localStorage.getItem(`editable_content_${id}`) || el.textContent.trim();
+                
+                // Get the default text from the element's innerHTML before it was set by loadContent
+                const defaultText = el.getAttribute('data-default-text') || el.textContent.trim();
+                
+                // If there's content in localStorage, use that as the comparison point
+                const comparisonText = localStorage.getItem(`editable_content_${id}`) || defaultText;
+
+                if (newText !== comparisonText) {
+                    localStorage.setItem(`editable_content_${id}`, newText);
+                    changesMade = true;
+                }
+            });
+
+            if (changesMade) {
+                statusMessage.textContent = 'ცვლილებები შენახულია ლოკალურად!';
+                statusMessage.classList.remove('hidden', 'text-red-600');
+                statusMessage.classList.add('text-green-600');
+            } else {
+                statusMessage.textContent = 'ცვლილება არ მომხდარა.';
+                statusMessage.classList.remove('hidden', 'text-green-600');
+                statusMessage.classList.add('text-red-600');
+            }
+            
+            // Exit editing mode after saving (or attempting to save)
+            isEditing = false;
+            editableElements.forEach(el => { el.contentEditable = false; });
+            editButton.textContent = 'ტექსტის რედაქტირება';
+            editButton.classList.remove('bg-red-600', 'hover:bg-red-700');
+            editButton.classList.add('bg-gray-500', 'hover:bg-gray-600');
+            saveButton.classList.add('hidden');
+        });
+
+        // Initial load
+        window.onload = loadContent;
+    </script>
+</body>
+</html>
