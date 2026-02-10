@@ -3,227 +3,1069 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>აპლიკაციის ვერსიების დაფა</title>
-    <!-- Tailwind CSS CDN-ის ჩატვირთვა -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- ინტერფეისის ესთეტიკა: შრიფტი და ძირითადი სტილები -->
+    <title>Geni - აირჩიე შენი ვერსია</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Righteous&family=Noto+Sans+Georgian:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-light: #f8f9fa;
+            --bg-gradient-start: #ffffff;
+            --bg-gradient-end: #e8eef5;
+            --text-primary: #1a202c;
+            --text-secondary: #4a5568;
+            --accent-purple: #8b5cf6;
+            --accent-blue: #3b82f6;
+            --accent-cyan: #06b6d4;
+            --accent-pink: #ec4899;
+            --accent-orange: #f59e0b;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6; /* ღია ნაცრისფერი ფონი */
-            color: #1f2937; /* მუქი ტექსტი */
+            font-family: 'Noto Sans Georgian', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
         }
-        .card {
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            background-color: white; /* ღია ბარათები */
-            border: 1px solid #e5e7eb;
+
+        /* Animated background particles */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
         }
-        .card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: rgba(139, 92, 246, 0.2);
+            border-radius: 50%;
+            animation: float 20s infinite;
         }
-        .primary-button {
-            transition: all 0.2s ease;
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); opacity: 0; }
+            10% { opacity: 0.5; }
+            50% { transform: translate(100px, -200px); opacity: 0.8; }
+            90% { opacity: 0.5; }
         }
-        .editable-content {
-            border-radius: 4px;
-            padding: 2px;
-            transition: background-color 0.2s;
+
+        /* Header */
+        header {
+            position: relative;
+            z-index: 10;
+            padding: 3rem 2rem;
+            text-align: center;
+            animation: fadeInDown 0.8s ease-out;
         }
-        .editable-content[contenteditable="true"] {
-            outline: 2px dashed #4f46e5;
-            background-color: rgba(79, 70, 229, 0.1); /* ღია ფონი რედაქტირებისას */
+
+        .logo {
+            font-family: 'Righteous', cursive;
+            font-size: 4.5rem;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.5)); }
+            50% { filter: drop-shadow(0 0 40px rgba(139, 92, 246, 0.8)); }
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            animation: fadeIn 1s ease-out 0.3s backwards;
+        }
+
+        /* Main Container */
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .versions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        /* Version Cards */
+        .version-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 2.5rem;
+            border: 2px solid rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: fadeInUp 0.8s ease-out backwards;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .version-card:nth-child(1) { animation-delay: 0.1s; }
+        .version-card:nth-child(2) { animation-delay: 0.2s; }
+        .version-card:nth-child(3) { animation-delay: 0.3s; }
+        .version-card:nth-child(4) { animation-delay: 0.4s; }
+        .version-card:nth-child(5) { animation-delay: 0.5s; }
+
+        .version-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, transparent, rgba(0, 0, 0, 0.02));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .version-card:hover {
+            transform: translateY(-12px);
+            border-color: var(--card-accent);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 0 40px var(--card-accent-shadow);
+        }
+
+        .version-card:hover::before {
+            opacity: 1;
+        }
+
+        /* Card Accent Colors */
+        .version-card.v1 {
+            --card-accent: var(--accent-purple);
+            --card-accent-shadow: rgba(139, 92, 246, 0.3);
+        }
+
+        .version-card.v2 {
+            --card-accent: var(--accent-blue);
+            --card-accent-shadow: rgba(59, 130, 246, 0.3);
+        }
+
+        .version-card.v3 {
+            --card-accent: var(--accent-cyan);
+            --card-accent-shadow: rgba(6, 182, 212, 0.3);
+        }
+
+        .version-card.v4 {
+            --card-accent: var(--accent-pink);
+            --card-accent-shadow: rgba(236, 72, 153, 0.3);
+        }
+
+        .version-card.v5 {
+            --card-accent: var(--accent-orange);
+            --card-accent-shadow: rgba(245, 158, 11, 0.3);
+        }
+
+        .version-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--card-accent);
+            padding: 0.5rem 1rem;
+            background: rgba(0, 0, 0, 0.04);
+            border-radius: 50px;
+            margin-bottom: 1.5rem;
+        }
+
+        .version-badge .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--card-accent);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        .version-title {
+            font-family: 'Righteous', cursive;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .version-subtitle {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .features-list {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .features-list li {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .features-list li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--card-accent);
+            font-weight: bold;
+        }
+
+        .cta-button {
+            width: 100%;
+            padding: 1rem 2rem;
+            background: var(--card-accent);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Noto Sans Georgian', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+            z-index: -1;
+        }
+
+        .cta-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .cta-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px var(--card-accent-shadow);
+        }
+
+        /* Special badges */
+        .special-badge {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            padding: 0.4rem 0.8rem;
+            background: var(--card-accent);
+            color: white;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            animation: slideInRight 0.6s ease-out backwards;
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Footer */
+        footer {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 4rem;
+            animation: fadeIn 1s ease-out 1s backwards;
+        }
+
+        footer a {
+            color: var(--accent-purple);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        footer a:hover {
+            color: var(--accent-cyan);
+        }
+
+        /* Comparison Table */
+        .comparison-section {
+            margin-top: 5rem;
+            animation: fadeInUp 1s ease-out 0.6s backwards;
+        }
+
+        .table-container {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(139, 92, 246, 0.1);
+            box-shadow: 0 8px 32px rgba(139, 92, 246, 0.08), 
+                        0 2px 8px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 2rem 2.5rem;
+            background: linear-gradient(135deg, 
+                rgba(139, 92, 246, 0.08) 0%, 
+                rgba(6, 182, 212, 0.08) 100%);
+            border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .table-header:hover {
+            background: linear-gradient(135deg, 
+                rgba(139, 92, 246, 0.12) 0%, 
+                rgba(6, 182, 212, 0.12) 100%);
+        }
+
+        .table-header-content {
+            flex: 1;
+        }
+
+        .comparison-title {
+            font-family: 'Righteous', cursive;
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 0.02em;
+            margin-bottom: 0.5rem;
+        }
+
+        .comparison-subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 400;
+        }
+
+        .toggle-button {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(139, 92, 246, 0.1);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            color: var(--accent-purple);
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .toggle-button:hover {
+            background: rgba(139, 92, 246, 0.2);
+            transform: scale(1.05);
+        }
+
+        .toggle-button.collapsed {
+            transform: rotate(0deg);
+        }
+
+        .toggle-button.expanded {
+            transform: rotate(180deg);
+        }
+
+        .table-wrapper {
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            max-height: 0;
+        }
+
+        .table-wrapper.expanded {
+            max-height: 2000px;
+        }
+
+        .table-content {
+            padding: 2rem 0;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.95rem;
+        }
+
+        .comparison-table thead {
+            position: relative;
+        }
+
+        .comparison-table th {
+            padding: 1.5rem 1.5rem;
+            text-align: center;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            border: none;
+            position: relative;
+        }
+
+        .comparison-table th:first-child {
+            padding-left: 2.5rem;
+            text-align: left;
+        }
+
+        .comparison-table th:last-child {
+            padding-right: 2.5rem;
+        }
+
+        /* Version header badges */
+        .comparison-table th:nth-child(2)::before { background: var(--accent-orange); }
+        .comparison-table th:nth-child(3)::before { background: var(--accent-pink); }
+        .comparison-table th:nth-child(4)::before { background: var(--accent-cyan); }
+        .comparison-table th:nth-child(5)::before { background: var(--accent-blue); }
+        .comparison-table th:nth-child(6)::before { background: var(--accent-purple); }
+
+        .comparison-table th::before {
+            content: '';
+            position: absolute;
+            top: 0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 32px;
+            height: 3px;
+            border-radius: 2px;
+            opacity: 0.6;
+        }
+
+        .comparison-table th:first-child::before {
+            display: none;
+        }
+
+        .comparison-table td {
+            padding: 1.25rem 1.5rem;
+            border: none;
+            color: var(--text-secondary);
+            position: relative;
+            text-align: center;
+        }
+
+        .comparison-table td:first-child {
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-primary);
+            padding-left: 2.5rem;
+            font-size: 1rem;
+        }
+
+        .comparison-table td:last-child {
+            padding-right: 2.5rem;
+        }
+
+        .comparison-table td::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 2rem;
+            right: 2rem;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(0, 0, 0, 0.06) 20%, 
+                rgba(0, 0, 0, 0.06) 80%, 
+                transparent 100%);
+        }
+
+        .comparison-table tbody tr:last-child td::after {
+            display: none;
+        }
+
+        .comparison-table tbody tr {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .comparison-table tbody tr::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .comparison-table tbody tr:hover {
+            background: linear-gradient(90deg, 
+                rgba(139, 92, 246, 0.04) 0%, 
+                rgba(6, 182, 212, 0.02) 100%);
+            transform: translateX(4px);
+        }
+
+        .comparison-table tbody tr:hover::before {
+            opacity: 1;
+        }
+
+        /* Classic checkmark icons */
+        .check, .cross, .partial {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 1rem;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            font-family: Arial, sans-serif;
+        }
+
+        .check {
+            background: #10b981;
+            color: white;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+        }
+
+        .cross {
+            background: #ef4444;
+            color: white;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+        }
+
+        .partial {
+            background: var(--accent-orange);
+            color: white;
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+        }
+
+        .comparison-table tbody tr:hover .check,
+        .comparison-table tbody tr:hover .cross,
+        .comparison-table tbody tr:hover .partial {
+            transform: scale(1.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .table-legend {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 3rem;
+            margin-top: 0;
+            padding: 1.5rem 2rem;
+            flex-wrap: wrap;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            background: rgba(0, 0, 0, 0.02);
+            border-top: 1px solid rgba(139, 92, 246, 0.08);
+        }
+
+        .table-legend span {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .table-legend span:hover {
+            background: rgba(139, 92, 246, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .table-legend .check,
+        .table-legend .cross,
+        .table-legend .partial {
+            width: 28px;
+            height: 28px;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 3rem;
+            }
+
+            .tagline {
+                font-size: 1rem;
+            }
+
+            .versions-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .version-card {
+                padding: 2rem;
+            }
+
+            .version-title {
+                font-size: 1.6rem;
+            }
+
+            .table-header {
+                padding: 1.5rem;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .toggle-button {
+                align-self: flex-end;
+                width: 40px;
+                height: 40px;
+            }
+
+            .comparison-title {
+                font-size: 1.8rem;
+            }
+
+            .comparison-subtitle {
+                font-size: 0.9rem;
+            }
+
+            .table-content {
+                padding: 1rem 0;
+            }
+
+            .comparison-table {
+                font-size: 0.8rem;
+            }
+
+            .comparison-table th,
+            .comparison-table td {
+                padding: 1rem 0.5rem;
+            }
+
+            .comparison-table th:first-child,
+            .comparison-table td:first-child {
+                padding-left: 1rem;
+            }
+
+            .comparison-table th:last-child,
+            .comparison-table td:last-child {
+                padding-right: 1rem;
+            }
+
+            .comparison-table td:first-child {
+                font-size: 0.85rem;
+            }
+
+            .check, .cross, .partial {
+                width: 26px;
+                height: 26px;
+                font-size: 0.9rem;
+            }
+
+            .table-legend {
+                flex-direction: row;
+                gap: 1rem;
+                padding: 1rem;
+                font-size: 0.85rem;
+            }
+
+            .table-legend .check,
+            .table-legend .cross,
+            .table-legend .partial {
+                width: 24px;
+                height: 24px;
+                font-size: 0.85rem;
+            }
+
+            .table-legend span {
+                padding: 0.4rem 0.8rem;
+            }
+        }
+
+        /* Accessibility */
+        .version-card:focus {
+            outline: 3px solid var(--card-accent);
+            outline-offset: 4px;
+        }
+
+        .cta-button:focus {
+            outline: 3px solid rgba(0, 0, 0, 0.3);
+            outline-offset: 2px;
         }
     </style>
 </head>
-<body class="p-4 md:p-10">
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation" id="bgAnimation"></div>
 
-    <div class="max-w-7xl mx-auto">
-        <!-- სათაური და კონტროლი -->
-        <header class="text-center mb-10">
-            <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-2">აპლიკაციის ვერსიების დაფა</h1>
-            <p class="text-xl text-gray-600 mb-6">ყველა ხელმისაწვდომი ვერსია ერთ სივრცეში (შებრუნებული თანმიმდევრობა)</p>
+    <!-- Header -->
+    <header>
+        <h1 class="logo">GENI</h1>
+        <p class="tagline">აირჩიე შენთვის შესაფერისი ვერსია და დაიწყე მუშაობა</p>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <div class="versions-grid">
             
-            <div class="flex justify-center space-x-4">
-                <button id="editButton" class="primary-button bg-gray-500 text-white py-2 px-6 rounded-lg font-semibold hover:bg-gray-600 focus:outline-none focus:ring-4 focus:ring-gray-400 focus:ring-opacity-50">
-                    ტექსტის რედაქტირება
-                </button>
-                <button id="saveButton" class="primary-button bg-indigo-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50 hidden">
-                    ცვლილებების შენახვა
-                </button>
-            </div>
-            <div id="statusMessage" class="mt-4 text-sm font-medium text-green-600 hidden"></div>
-        </header>
+            <!-- Version 5 -->
+            <article class="version-card v5" tabindex="0" role="button" onclick="openVersion('https://geni-pr.vercel.app/')">
+                <span class="special-badge">⭐ რეკომენდირებული</span>
+                <div class="version-badge">
+                    <span class="dot"></span>
+                    ვერსია 5
+                </div>
+                <h2 class="version-title">Supabase სრული</h2>
+                <p class="version-subtitle">სრულყოფილი cloud-based სისტემა Supabase ინფრასტრუქტურაზე. მონაცემთა შენახვა, ავტორიზაცია და სინქრონიზაცია სრულად სერვერულ გარემოში. აქტიური განვითარების პროცესში - ყველა ბოლო სამუშაო და ფუნქციონალი პირველ რიგში ამ ვერსიაში ინტეგრირდება.</p>
+                <ul class="features-list">
+                    <li>სრული Supabase ინტეგრაცია</li>
+                    <li>რეგისტრაცია/ავტორიზაცია</li>
+                    <li>მართვის ცენტრი</li>
+                    <li>უახლესი განახლებები</li>
+                </ul>
+                <button class="cta-button" aria-label="გახსენი Supabase სრული ვერსია">გახსენი ვერსია</button>
+            </article>
 
-        <!-- ბარათების კონტეინერი -->
-        <main class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            <!-- Version 4 -->
+            <article class="version-card v4" tabindex="0" role="button" onclick="openVersion('https://geni-am.vercel.app/')">
+                <span class="special-badge">🔥 პოპულარული</span>
+                <div class="version-badge">
+                    <span class="dot"></span>
+                    ვერსია 4
+                </div>
+                <h2 class="version-title">ფლაგმანი</h2>
+                <p class="version-subtitle">ღია წვდომის ვერსია მაქსიმალური ფუნქციონალით. ჰიბრიდული არქიტექტურა: მონაცემები ინახება ლოკალურად, მაგრამ შესაძლებელია Supabase-ზე ბექაპის შექმნა. სურათების ატვირთვა, გაზიარება და real-time შეტყობინებები დაკავშირებულია Supabase-თან.</p>
+                <ul class="features-list">
+                    <li>Supabase ბექაპი</li>
+                    <li>სურათების ატვირთვა</li>
+                    <li>შეტყობინებები რეალურ დროში</li>
+                    <li>გაზიარება და კოლაბორაცია</li>
+                </ul>
+                <button class="cta-button" aria-label="გახსენი ფლაგმანი ვერსია">გახსენი ვერსია</button>
+            </article>
+
+            <!-- Version 3 -->
+            <article class="version-card v3" tabindex="0" role="button" onclick="openVersion('https://geni-pb.vercel.app/')">
+                <div class="version-badge">
+                    <span class="dot"></span>
+                    ვერსია 3
+                </div>
+                <h2 class="version-title">სტარტი</h2>
+                <p class="version-subtitle">ავტორიზაციის გარეშე მომუშავე სტაბილური ვერსია. სურათების გასაზიარებლად საჭიროა ImgBB.com API Key-ის მითითება. დროებითი გაზიარება File.io სერვისის საშუალებით. მონაცემები ინახება ლოკალურად browser cache-ში, შესაძლებელია ექსპორტი და იმპორტი.</p>
+                <ul class="features-list">
+                    <li>არ სჭირდება ავტორიზაცია</li>
+                    <li>ImgBB API სურათებისთვის</li>
+                    <li>File.io დროებითი გაზიარება</li>
+                    <li>იდეალური მუშაობა</li>
+                </ul>
+                <button class="cta-button" aria-label="გახსენი სტარტ ვერსია">გახსენი ვერსია</button>
+            </article>
+
+            <!-- Version 2 -->
+            <article class="version-card v2" tabindex="0" role="button" onclick="openVersion('https://avma-geni.netlify.app/')">
+                <div class="version-badge">
+                    <span class="dot"></span>
+                    ვერსია 2
+                </div>
+                <h2 class="version-title">ავტორიზაცია</h2>
+                <p class="version-subtitle">პირველი ვერსიის მსგავსი ფუნქციონალი ავტორიზაციის დამატებით. განლაგებულია Netlify.app პლატფორმაზე. სტანდარტული შესაძლებლობები პერსონალური ანგარიშის მართვით.</p>
+                <ul class="features-list">
+                    <li>მომხმარებლის ავტორიზაცია</li>
+                    <li>Netlify ჰოსტინგი</li>
+                    <li>გაუმჯობესებული უსაფრთხოება</li>
+                    <li>პერსონალური აქაუნთი</li>
+                </ul>
+                <button class="cta-button" aria-label="გახსენი ავტორიზაციის ვერსია">გახსენი ვერსია</button>
+            </article>
             
-            <!-- ბარათი 5: Supabase სერვერზე (პირველი) -->
-            <div class="card p-6 rounded-xl flex flex-col justify-between">
-                <div>
-                    <h2 class="text-2xl font-bold text-pink-600 mb-3 flex items-center">
-                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c1.657 0 3 .895 3 2s-1.343 2-3 2-3-.895-3-2 1.343-2 3-2zM4 14c0 1.657 3.582 3 8 3s8-1.343 8-3-3.582-3-8-3-8 1.343-8 3z"></path></svg>
-                        ვერსია 5 (Supabase სრული)
-                    </h2>
-                    <p class="editable-content text-gray-700 mb-6" data-id="v5" contenteditable="false">
-                        თავიდან ბოლომდე მუშაობს Supabase სერვერზე. იყენებს მის მონაცემთა ბაზასა და ავთენტიფიკაციის სისტემას.
-                    </p>
+            <!-- Version 1 -->
+            <article class="version-card v1" tabindex="0" role="button" onclick="openVersion('https://geni-original-454925356014.us-west1.run.app/')">
+                <div class="version-badge">
+                    <span class="dot"></span>
+                    ვერსია 1
                 </div>
-                <a href="https://geni-pr.vercel.app/" target="_blank" class="primary-button inline-block text-center bg-pink-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-pink-700 focus:outline-none focus:ring-4 focus:ring-pink-500 focus:ring-opacity-50 mt-auto">
-                    გადასვლა
-                </a>
-            </div>
+                <h2 class="version-title">ორიგინალი AI</h2>
+                <p class="version-subtitle">საწყისი ვერსია Gemini AI ინტეგრაციით. იდეის ჩამოყალიბების და კონცეფციის დემონსტრაციის ეტაპი. მონაცემები ინახება ლოკალურად browser cache-ში, რაც უზრუნველყოფს ექსპორტის და იმპორტის შესაძლებლობას. Google Cloud Run პლატფორმაზე განლაგებული პროტოტიპი.</p>
+                <ul class="features-list">
+                    <li>Gemini AI ინტეგრაცია</li>
+                    <li>ლოკალური მონაცემთა შენახვა</li>
+                    <li>ექსპორტი/იმპორტი</li>
+                    <li>იდეის ჩამოყალიბების ვერსია</li>
+                </ul>
+                <button class="cta-button" aria-label="გახსენი ორიგინალი AI ვერსია">გახსენი ვერსია</button>
+            </article>
 
-            <!-- ბარათი 4: სრული ფუნქციონალი (Supabase ბექაპი) -->
-            <div class="card p-6 rounded-xl flex flex-col justify-between">
-                <div>
-                    <h2 class="text-2xl font-bold text-blue-600 mb-3 flex items-center">
-                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 17h18M6 17v-4m-1.5 0H19M4 21h16a2 2 0 002-2V8a2 2 0 00-2-2H4a2 2 0 00-2 2v11a2 2 0 002 2zm1-5h8m-8 4h8m-8-8h2m-2-4h14a2 2 0 002-2V5a2 2 0 00-2-2H4a2 2 0 00-2 2v2a2 2 0 002 2z"></path></svg>
-                        ვერსია 4 (ფლაგმანი)
-                    </h2>
-                    <p class="editable-content text-gray-700 mb-6" data-id="v4" contenteditable="false">
-                        ძალიან მაგარი ვერსია ღია წვდომით. სრული ფუნქციონალი: Supabase ბექაპი, სურათების ატვირთვა, გაზიარება და შეტყობინებები.
-                    </p>
-                </div>
-                <a href="https://geni-am.vercel.app/" target="_blank" class="primary-button inline-block text-center bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 mt-auto">
-                    გადასვლა
-                </a>
-            </div>
+        </div>
 
-            <!-- ბარათი 3: მარტივი დაწყება (ავტორიზაციის გარეშე) - განახლებული აღწერილობით -->
-            <div class="card p-6 rounded-xl flex flex-col justify-between">
-                <div>
-                    <h2 class="text-2xl font-bold text-green-600 mb-3 flex items-center">
-                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                        ვერსია 3 (სტარტი)
-                    </h2>
-                    <p class="editable-content text-gray-700 mb-6" data-id="v3" contenteditable="false">
-                        არ სჭირდება ავტორიზაცია. მუშაობს იდეალურად. სურათების გასაზიარებლად საჭიროა API Key-ის მითითება. გაზიარებისას იყენებს დროებით სერვისებს.
-                    </p>
+        <!-- Comparison Table -->
+        <section class="comparison-section">
+            <div class="table-container">
+                <div class="table-header" onclick="toggleTable()">
+                    <div class="table-header-content">
+                        <h2 class="comparison-title">ვერსიების შედარება</h2>
+                        <p class="comparison-subtitle">დეტალური შედარება ყველა ხელმისაწვდომ ფუნქციასა და შესაძლებლობას შორის</p>
+                    </div>
+                    <button class="toggle-button expanded" id="toggleBtn" aria-label="გახსენი/დახურე ცხრილი">
+                        ▼
+                    </button>
                 </div>
-                <a href="https://geni-pb.vercel.app/" target="_blank" class="primary-button inline-block text-center bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-opacity-50 mt-auto">
-                    გადასვლა
-                </a>
+                
+                <div class="table-wrapper expanded" id="tableWrapper">
+                    <div class="table-content">
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>V5</th>
+                                    <th>V4</th>
+                                    <th>V3</th>
+                                    <th>V2</th>
+                                    <th>V1</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Gemini AI</td>
+                                    <td><span class="check">✓</span></td>
+                                    <td><span class="check">✓</span></td>
+                                    <td><span class="check">✓</span></td>
+                                    <td><span class="check">✓</span></td>
+                                    <td><span class="check">✓</span></td>
+                                </tr>
+                                <tr>
+                                    <td>ავტორიზაცია</td>
+                                    <td><span class="check">✓</span></td>
+                                    <td><span class="partial">~</span></td>
+                                    <td><span class="cross">✗</span></td>
+                                    <td><span class="check">✓</span></td>
+                                    <td><span class="cross">✗</span></td>
+                                </tr>
+                                <tr>
+                                    <td>ლოკალური შენახვა</td>
+                                    <td><span class="check">✓</span></td>
+                                    <td><span class="check">✓</span></td>
+                                    <td><span class="check">✓</span></td>
+                                    <td><span class="check">✓</span></td>
+                                    <td><span class="check">✓</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Supabase ბექაპი</td>
+                                    <td><span class="check">✓</span></td>
+                                    <td><span class="check">✓</span></td>
+                                    <td><span class="cross">✗</span></td>
+                                    <td><span class="cross">✗</span></td>
+                                    <td><span class="cross">✗</span></td>
+                                </tr>
+                                <tr>
+                                    <td>სურათების ატვირთვა</td>
+                                    <td><span class="check">✓</span></td>
+                                    <td><span class="check">✓</span></td>
+                                    <td><span class="check">✓</span></td>
+                                    <td><span class="cross">✗</span></td>
+                                    <td><span class="cross">✗</span></td>
+                                </tr>
+                                <tr>
+                                    <td>გაზიარება</td>
+                                    <td><span class="check">✓</span></td>
+                                    <td><span class="check">✓</span></td>
+                                    <td><span class="check">✓</span></td>
+                                    <td><span class="partial">~</span></td>
+                                    <td><span class="partial">~</span></td>
+                                </tr>
+                                <tr>
+                                    <td>შეტყობინებები</td>
+                                    <td><span class="check">✓</span></td>
+                                    <td><span class="check">✓</span></td>
+                                    <td><span class="cross">✗</span></td>
+                                    <td><span class="cross">✗</span></td>
+                                    <td><span class="cross">✗</span></td>
+                                </tr>
+                                <tr>
+                                    <td>მართვის ცენტრი</td>
+                                    <td><span class="check">✓</span></td>
+                                    <td><span class="cross">✗</span></td>
+                                    <td><span class="cross">✗</span></td>
+                                    <td><span class="cross">✗</span></td>
+                                    <td><span class="cross">✗</span></td>
+                                </tr>
+                                <tr>
+                                    <td>ექსპორტი/იმპორტი</td>
+                                    <td><span class="check">✓</span></td>
+                                    <td><span class="check">✓</span></td>
+                                    <td><span class="check">✓</span></td>
+                                    <td><span class="check">✓</span></td>
+                                    <td><span class="check">✓</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="table-legend">
+                        <span><span class="check">✓</span> სრული მხარდაჭერა</span>
+                        <span><span class="partial">~</span> ნაწილობრივი</span>
+                        <span><span class="cross">✗</span> არ აქვს</span>
+                    </div>
+                </div>
             </div>
+        </section>
+    </main>
 
-            <!-- ბარათი 2: ავტორიზაციით (ლოკალური) -->
-            <div class="card p-6 rounded-xl flex flex-col justify-between">
-                <div>
-                    <h2 class="text-2xl font-bold text-yellow-600 mb-3 flex items-center">
-                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                        ვერსია 2 (ავტორიზაცია)
-                    </h2>
-                    <p class="editable-content text-gray-700 mb-6" data-id="v2" contenteditable="false">
-                        საჭიროა ავტორიზაცია. თუ ავტორიზაცია არ გაქვთ, მუშაობს ლოკალურად თქვენს ბრაუზერში.
-                    </p>
-                </div>
-                <a href="https://avma-geni.netlify.app/" target="_blank" class="primary-button inline-block text-center bg-yellow-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-yellow-700 focus:outline-none focus:ring-4 focus:ring-yellow-500 focus:ring-opacity-50 mt-auto">
-                    გადასვლა
-                </a>
-            </div>
-            
-            <!-- ბარათი 1: ორიგინალი - AI მხარდაჭერით (ბოლო) -->
-            <div class="card p-6 rounded-xl flex flex-col justify-between">
-                <div>
-                    <h2 class="text-2xl font-bold text-indigo-600 mb-3 flex items-center">
-                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-1.75-3M3 14h18M5 17h14M10 7l-2 5m8-5l-2 5"></path></svg>
-                        ვერსია 1 (ორიგინალი AI)
-                    </h2 >
-                    <p class="editable-content text-gray-700 mb-6" data-id="v1" contenteditable="false">
-                        მუშაობს ხელოვნური ინტელექტის (AI) მხარდაჭერით. ეს არის აპლიკაციის საწყისი, ორიგინალი ვერსია.
-                    </p>
-                </div>
-                <a href="https://geni-original-454925356014.us-west1.run.app/" target="_blank" class="primary-button inline-block text-center bg-indigo-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50 mt-auto">
-                    გადასვლა
-                </a>
-            </div>
-
-        </main>
-    </div>
+    <!-- Footer -->
+    <footer>
+        <p>შექმნილია ❤️-ით <a href="https://avma.vercel.app/bio" target="_blank" rel="noopener noreferrer">ავთანდილ მაჩიტაძის</a> მიერ</p>
+        <p style="margin-top: 0.5rem;">Geni Platform © 2026 | ყველა ვერსია განვითარების პროცესშია და რეგულარულად ახლდება</p>
+    </footer>
 
     <script>
-        const editButton = document.getElementById('editButton');
-        const saveButton = document.getElementById('saveButton');
-        const statusMessage = document.getElementById('statusMessage');
-        const editableElements = document.querySelectorAll('.editable-content');
-        let isEditing = false;
+        // Background particles animation
+        function createParticles() {
+            const bgAnimation = document.getElementById('bgAnimation');
+            const particleCount = 30;
 
-        // Load content from localStorage on page load
-        function loadContent() {
-            editableElements.forEach(el => {
-                const id = el.dataset.id;
-                const savedText = localStorage.getItem(`editable_content_${id}`);
-                if (savedText) {
-                    el.textContent = savedText;
-                }
-            });
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                
+                // Random colors for light theme
+                const colors = ['rgba(139, 92, 246, 0.2)', 'rgba(59, 130, 246, 0.2)', 'rgba(6, 182, 212, 0.2)', 'rgba(236, 72, 153, 0.2)', 'rgba(245, 158, 11, 0.2)'];
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                bgAnimation.appendChild(particle);
+            }
         }
 
-        // Toggle editing mode
-        editButton.addEventListener('click', () => {
-            isEditing = !isEditing;
+        createParticles();
+
+        // Toggle table collapse/expand
+        function toggleTable() {
+            const wrapper = document.getElementById('tableWrapper');
+            const btn = document.getElementById('toggleBtn');
             
-            editableElements.forEach(el => {
-                el.contentEditable = isEditing;
-            });
-
-            if (isEditing) {
-                editButton.textContent = 'რედაქტირების დასრულება';
-                editButton.classList.remove('bg-gray-500', 'hover:bg-gray-600');
-                editButton.classList.add('bg-red-600', 'hover:bg-red-700');
-                saveButton.classList.remove('hidden');
-                statusMessage.classList.add('hidden');
+            if (wrapper.classList.contains('expanded')) {
+                wrapper.classList.remove('expanded');
+                btn.classList.remove('expanded');
+                btn.classList.add('collapsed');
             } else {
-                editButton.textContent = 'ტექსტის რედაქტირება';
-                editButton.classList.remove('bg-red-600', 'hover:bg-red-700');
-                editButton.classList.add('bg-gray-500', 'hover:bg-gray-600');
-                // Don't hide save button yet, let the user decide to save or discard
+                wrapper.classList.add('expanded');
+                btn.classList.add('expanded');
+                btn.classList.remove('collapsed');
             }
-        });
+        }
 
-        // Save changes to localStorage (persists in the browser)
-        saveButton.addEventListener('click', () => {
-            let changesMade = false;
-            editableElements.forEach(el => {
-                const id = el.dataset.id;
-                const newText = el.textContent.trim();
-                const currentSavedText = localStorage.getItem(`editable_content_${id}`) || el.textContent.trim();
-                
-                // Get the default text from the element's innerHTML before it was set by loadContent
-                const defaultText = el.getAttribute('data-default-text') || el.textContent.trim();
-                
-                // If there's content in localStorage, use that as the comparison point
-                const comparisonText = localStorage.getItem(`editable_content_${id}`) || defaultText;
+        // Open version in new tab
+        function openVersion(url) {
+            window.open(url, '_blank');
+        }
 
-                if (newText !== comparisonText) {
-                    localStorage.setItem(`editable_content_${id}`, newText);
-                    changesMade = true;
+        // Keyboard navigation
+        document.querySelectorAll('.version-card').forEach(card => {
+            card.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    card.click();
                 }
             });
-
-            if (changesMade) {
-                statusMessage.textContent = 'ცვლილებები შენახულია ლოკალურად!';
-                statusMessage.classList.remove('hidden', 'text-red-600');
-                statusMessage.classList.add('text-green-600');
-            } else {
-                statusMessage.textContent = 'ცვლილება არ მომხდარა.';
-                statusMessage.classList.remove('hidden', 'text-green-600');
-                statusMessage.classList.add('text-red-600');
-            }
-            
-            // Exit editing mode after saving (or attempting to save)
-            isEditing = false;
-            editableElements.forEach(el => { el.contentEditable = false; });
-            editButton.textContent = 'ტექსტის რედაქტირება';
-            editButton.classList.remove('bg-red-600', 'hover:bg-red-700');
-            editButton.classList.add('bg-gray-500', 'hover:bg-gray-600');
-            saveButton.classList.add('hidden');
         });
 
-        // Initial load
-        window.onload = loadContent;
+        // Add subtle parallax effect on mouse move
+        document.addEventListener('mousemove', (e) => {
+            const cards = document.querySelectorAll('.version-card');
+            const mouseX = e.clientX / window.innerWidth;
+            const mouseY = e.clientY / window.innerHeight;
+
+            cards.forEach((card, index) => {
+                const depth = (index + 1) * 0.5;
+                const moveX = (mouseX - 0.5) * depth;
+                const moveY = (mouseY - 0.5) * depth;
+                card.style.transform = `translate(${moveX}px, ${moveY}px)`;
+            });
+        });
+
+        // Reset transform on mouse leave
+        document.addEventListener('mouseleave', () => {
+            const cards = document.querySelectorAll('.version-card');
+            cards.forEach(card => {
+                card.style.transform = '';
+            });
+        });
     </script>
 </body>
 </html>
